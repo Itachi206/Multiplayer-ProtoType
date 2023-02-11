@@ -1,3 +1,4 @@
+using Photon.Pun.Demo.PunBasics;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,7 +30,29 @@ public class CameraFollow : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-    }    
+    }
+
+    private void Update()
+    {
+        LockAndUnLockCursor();
+    }
+
+    private void LockAndUnLockCursor()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.None;                
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;               
+            }
+        }
+    }
 
     // Update is called once per frame
     void LateUpdate()

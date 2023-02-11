@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
+using System.Linq;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -14,7 +15,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text errorText;
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] Transform roomListContent;
+    [SerializeField] Transform playerListContent;
     [SerializeField] GameObject roomListPrefab;
+    [SerializeField] GameObject playerListPrefab;
+    [SerializeField] GameObject startGameButton;
 
     private void Awake()
     {
@@ -27,26 +31,48 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Start()
     {
         Debug.Log("Connecting to Master");
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.ConnectUsingSettings();        
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Master");
         PhotonNetwork.JoinLobby();
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
+
+    public void StartGame()
+    {
+        if(PhotonNetwork.IsMasterClient)
+            PhotonNetwork.LoadLevel(1);
+    }
+
 
     public override void OnJoinedLobby()
     {
         MenuManager.Instance.OpenMenu("Menu");
         Debug.Log("Joined Lobby");
+        PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString();
     }
 
     public override void OnJoinedRoom()
     {
-        MenuManager.Instance.OpenMenu("RoomMenu");
+        MenuManager.Instance.OpenMenu("PlayerListMenu");
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
-    }
+
+        Player[] players = PhotonNetwork.PlayerList;
+
+        foreach (Transform child in playerListContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        for (int i = 0; i < players.Count(); i++)
+        {
+            Instantiate(playerListPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(players[i]);
+        }
+        startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+    }    
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
@@ -92,5 +118,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             Instantiate(roomListPrefab, roomListContent).GetComponent<RoomListItem>().SetUp(roomList[i]);
         }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Instantiate(playerListPrefab, playerListContent).GetComponent<PlayerListitem>().SetUp(newPlayer);
     }
 }
