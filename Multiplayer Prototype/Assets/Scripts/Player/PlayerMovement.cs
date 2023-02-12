@@ -37,6 +37,10 @@ public class PlayerMovement: MonoBehaviour
 
     Rigidbody rb;
 
+    private void Awake()
+    {
+        PV= GetComponent<PhotonView>();
+    }
     private void Start()
     {
         rb = GetComponent<Rigidbody>();

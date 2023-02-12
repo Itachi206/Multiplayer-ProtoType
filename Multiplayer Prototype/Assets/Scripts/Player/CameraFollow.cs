@@ -30,6 +30,10 @@ public class CameraFollow : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        player = GameObject.FindObjectOfType<PlayerMovement>().transform;
+        rb = player.GetComponent<Rigidbody>();
+        orientation = GameObject.FindObjectOfType<OrientationManage>().transform;
+        playerObj = player.Find("Capsule").transform;
     }
 
     private void Update()
