@@ -31,14 +31,14 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Start()
     {
         Debug.Log("Connecting to Master");
+        PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();        
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Master");
-        PhotonNetwork.JoinLobby();
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.JoinLobby();        
     }
 
     public void StartGame()
